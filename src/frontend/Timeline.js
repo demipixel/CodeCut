@@ -3,7 +3,7 @@ const SnippetLine = require('./SnippetLine');
 // Main timeline. This pretty much handles everything regarding
 // editing, previewing, and exporting.
 class Timeline {
-  constructor(pixiApp) {
+  constructor(pixiApp, TimelineVisuals) {
     this.pixiApp = pixiApp;
     this.snippetLines = [];
     this.previewTime = 0;
@@ -15,10 +15,17 @@ class Timeline {
     this.lastPreviewFrameTime = Date.now();
 
     this.addLine();
+    this.TimelineVisuals = TimelineVisuals;
+    this.TimelineVisuals.addSnippetLines(this);
   }
 
   addLine() {
     this.snippetLines.push(new SnippetLine(this));
+  }
+
+  removeLine(index) {
+    this.snippetLines.splice(index, 1);
+    this.TimelineVisuals.removeSnippetLine(index);
   }
 
   // Play preview
@@ -57,9 +64,10 @@ class Timeline {
       else this.previewTime += Math.max(1/this.previewFps, delta);
     }
 
-    document.getElementById('previewTime').innerText = 'Preview Time: '+this.previewTime.toFixed(2);
+    document.getElementById('preview-time').innerText = 'Preview Time: '+this.previewTime.toFixed(2);
 
     this.update();
+    this.TimelineVisuals.setPlayhead(this.previewTime);
 
     // Not requestAnimationFrame(this.tick) because I'm worried
     // it will break `this` (such as if we did setInterval(this.tick))

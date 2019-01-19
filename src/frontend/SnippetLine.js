@@ -23,7 +23,7 @@ class SnippetLine {
   }
 
   newSnippet(parentClass, start) {
-    const snippet = new Snippet(this.pixiContainer, parentClass, start);
+    const snippet = new Snippet(this, this.pixiContainer, parentClass, start);
     
     // Insert into snippets such that snippets remains sorted
     let indexOfSnippet = -1;
@@ -42,6 +42,12 @@ class SnippetLine {
       snippet.length = Math.min(snippet.length, maxSnippetLength);
     }
 
+    this.timeline.TimelineVisuals.addSnippet(
+      this.timeline.snippetLines.indexOf(this), // Get this snippet-line number
+      (indexOfSnippet + this.snippets.length) % this.snippets.length, // Index of snippet
+      snippet
+    );
+
     return snippet;
   }
 
@@ -57,6 +63,9 @@ class SnippetLine {
           this.currentSnippet = this.snippets[i];
           break;
         }
+      }
+      if (oldSnippet && this.currentSnippet != oldSnippet) {
+        oldSnippet.deactivate();
       }
     } else {
       // Handle ending current snippet

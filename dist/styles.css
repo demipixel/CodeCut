@@ -1,0 +1,61 @@
+
+body, html {
+  padding: 0px;
+  margin: 0px;
+  background: black;
+  color: white;
+}
+
+#timeline {
+  background: #111;
+  position: relative;
+}
+
+#time-visualizer {
+  background: #333;
+  margin-bottom: 5px;
+  height: 25px;
+}
+
+.snippet-line {
+  height: 30px;
+  background: #222;
+  margin-bottom: 5px;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+
+.snippet {
+  height: 26px;
+  background: #333;
+  position: relative;
+  top: 2px;
+  left: 0px;
+  cursor: pointer;
+}
+
+.snippet-edge-gripper  {
+  width: 5px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  height: 100%;
+}
+
+.snippet-edge-gripper:hover {
+  cursor: col-resize;
+}
+
+.snippet-edge-gripper-right {
+  left: unset;
+  right: 0px;
+}
+
+#playhead {
+  width: 1px;
+  height: 40px;
+  background: #ccc;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}

@@ -1,13 +1,22 @@
 <html>
   <head>
-    <script src="./codecut.js"></script>
+    <script src="/codecut.js"></script>
+    <link rel="stylesheet" href="/styles.css">
   </head>
   <body onLoad="CodeCut()">
     <h1>CodeCut</h1>
-    <button id="togglePlayPause" onClick="CodeCut.events.togglePlayPause()">Play</button>
-    <span id="previewTime">Preview Time: 0</span>
+    <button id="toggle-play-pause" onClick="CodeCut.events.togglePlayPause()">Play</button>
+    <span id="preview-time">Preview Time: 0</span>
     <br><br>
-    <div id="canvas_container"></canvas>
+    <div id="timeline">
+      <div id="playhead"></div>
+      <div id="time-visualizer">
+        <canvas id="time-visualizer-canvas"></canvas>
+      </div>
+      <div id="snippet-lines"></div>
+    </div>
+    <br>
+    <div id="canvas-container"></canvas>
 
   </body>
 </html>

@@ -4,10 +4,11 @@ const Waypoint = require('./Waypoint');
 // It's the box on the timeline that renders something and has
 // waypoints
 class Snippet {
-  constructor(pixiContainer, parentClass=null, start=0) {
+  constructor(snippetLine, pixiContainer, parentClass=null, start=0) {
     // All units are in seconds.
+    this.snippetLine = snippetLine;
     this.pixiContainer = pixiContainer;
-    this.parentClass = parentClass || 'Graphics'
+    this.parentClass = parentClass || 'Graphics'; // Do not use for now
     this.node = null;
     this.start = start;
     this.length = 1;
@@ -38,19 +39,20 @@ class Snippet {
     // Have we hit the next waypoint? If so, that's our new waypoint.
     if (this.nextWaypoint && this.nextWaypoint.beenHit(timeInSnippet)) {
       if (this.currentWaypointIndex != -1) {
-        this.node['waypoint_'+this.currentWaypointIndex+'_end']();
+        this.node['waypoint_'+this.currentWaypointIndex+'_end'](PIXI);
       }
       this.currentWaypoint = this.nextWaypoint;
       this.currentWaypointIndex++;
-      this.node['waypoint_'+this.currentWaypointIndex+'_hit']();
+      this.node['waypoint_'+this.currentWaypointIndex+'_hit'](PIXI);
     }
 
     // Run the tick function on the user's custom code
-    this.node.tick(timeInSnippet);
+    this.node.tick(PIXI, timeInSnippet);
 
     // Handle waypoints
     if (!this.currentWaypoint) return;
     this.node['waypoint_'+this.currentWaypointIndex+'_tick'](
+      PIXI,
       timeInSnippet  - this.currentWaypoint.start,
       timeInSnippet,
       (this.nextWaypoint ? this.nextWaypoint.start : this.length) - this.currentWaypoint.start
@@ -113,9 +115,19 @@ class Snippet {
     // by other waypoints or tick()
     if (!skippedAhead) this.respawnNodeInstance();
     for (let i = startIndex; i <= endIndex; i++) {
-      if (i != 0) this.node['waypoint_'+(i-1)+'_end']();
-      this.node['waypoint_'+i+'_hit']();
+      if (i != 0) this.node['waypoint_'+(i-1)+'_end'](PIXI);
+      this.node['waypoint_'+i+'_hit'](PIXI);
     }
+  }
+
+  get nextSnippet() {
+    const index = this.snippetLine.snippets.indexOf(this);
+    return this.snippetLine.snippets[index+1] || null;
+  }
+
+  get previousSnippet() {
+    const index = this.snippetLine.snippets.indexOf(this);
+    return this.snippetLine.snippets[index-1] || null;
   }
 
   updateNodeCode() {
@@ -131,14 +143,14 @@ class Snippet {
     
 
     // Eventually put try/catch around this and dump error to user
-    this.generatedClass.prototype.init = eval('(function(){'+this.initCode+'})');
-    this.generatedClass.prototype.tick = eval('(function(time){'+this.tickCode+'})');
+    this.generatedClass.prototype.init = eval('(function(PIXI){'+this.initCode+'})');
+    this.generatedClass.prototype.tick = eval('(function(PIXI, time){'+this.tickCode+'})');
 
     for (let w = 0; w < this.waypoints.length; w++) {
       const waypoint = this.waypoints[w];
-      this.generatedClass.prototype['waypoint_'+w+'_hit'] = eval('(function(){'+waypoint.hitCode+'})');
-      this.generatedClass.prototype['waypoint_'+w+'_tick'] = eval('(function(time, nodeTime, waypointLength){'+waypoint.tickCode+'})');
-      this.generatedClass.prototype['waypoint_'+w+'_end'] = eval('(function(){'+waypoint.endCode+'})');
+      this.generatedClass.prototype['waypoint_'+w+'_hit'] = eval('(function(PIXI){'+waypoint.hitCode+'})');
+      this.generatedClass.prototype['waypoint_'+w+'_tick'] = eval('(function(PIXI, time, nodeTime, waypointLength){'+waypoint.tickCode+'})');
+      this.generatedClass.prototype['waypoint_'+w+'_end'] = eval('(function(PIXI){'+waypoint.endCode+'})');
     }
 
     this.respawnNodeInstance();

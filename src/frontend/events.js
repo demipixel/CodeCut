@@ -1,7 +1,7 @@
 
 module.exports = function(timeline) {
   function togglePlayPause() {
-    const button = document.getElementById('togglePlayPause');
+    const button = document.getElementById('toggle-play-pause');
     if (timeline.playing) {
       timeline.pause();
       button.innerText = 'Play';
