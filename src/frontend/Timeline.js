@@ -1,10 +1,11 @@
-const NodeLine = require('./NodeLine');
+const SnippetLine = require('./SnippetLine');
 
 // Main timeline. This pretty much handles everything regarding
 // editing, previewing, and exporting.
 class Timeline {
-  constructor() {
-    this.nodeLines = [];
+  constructor(pixiApp) {
+    this.pixiApp = pixiApp;
+    this.snippetLines = [];
     this.previewTime = 0;
     this.playing = false;
     this.skipFramesIfNeeded = true;
@@ -12,10 +13,12 @@ class Timeline {
     this.previewSpeedScalar = 1.0;
 
     this.lastPreviewFrameTime = Date.now();
+
+    this.addLine();
   }
 
   addLine() {
-    this.nodeLines.push(new NodeLine(this));
+    this.snippetLines.push(new SnippetLine(this));
   }
 
   // Play preview
@@ -54,6 +57,8 @@ class Timeline {
       else this.previewTime += Math.max(1/this.previewFps, delta);
     }
 
+    document.getElementById('previewTime').innerText = 'Preview Time: '+this.previewTime.toFixed(2);
+
     this.update();
 
     // Not requestAnimationFrame(this.tick) because I'm worried
@@ -63,9 +68,9 @@ class Timeline {
     });
   }
 
-  update() {
-    for (let i = 0; i < this.nodeLines.length; i++) {
-      this.nodeLines.update();
+  update(scrubbed) {
+    for (let i = 0; i < this.snippetLines.length; i++) {
+      this.snippetLines[i].update(scrubbed);
     }
   }
 
