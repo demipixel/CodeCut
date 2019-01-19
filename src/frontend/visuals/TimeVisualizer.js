@@ -23,8 +23,25 @@ module.exports = function() {
 
     timeStart = Math.max(timeStart, -(2**6) * zoomLevel);
     render();
-    if (renderCb) renderCb();
+    renderCb();
   }
+
+  let isScrubbing = false;
+  canvas.onmousedown = function(e) {
+    isScrubbing = true;
+    const time = (e.clientX - canvas.clientLeft) / getPixelsPerSecond() + timeStart;
+    timeline.scrub(time);
+  }
+
+  document.addEventListener('mouseup', function(e) {
+    isScrubbing = false;
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isScrubbing) return;
+    const time = (e.clientX - canvas.clientLeft) / getPixelsPerSecond() + timeStart;
+    timeline.scrub(time);
+  });
 
   window.addEventListener('resize', function() {
     render();

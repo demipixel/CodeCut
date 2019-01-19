@@ -20,6 +20,7 @@
   "homepage": "https://github.com/demipixel/CodeCut#readme",
   "dependencies": {
     "browserify": "^16.2.3",
+    "codemirror": "^5.42.2",
     "pixi.js": "^4.8.5"
   },
   "devDependencies": {

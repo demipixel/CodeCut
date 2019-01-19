@@ -1,6 +1,8 @@
 
 module.exports = function(TimeVisualizer) {
   const playheadDom = document.getElementById('playhead');
+  let playheadTime = 0;
+
   function addSnippetLines(timeline) {
     for (let s = 0; s < timeline.snippetLines.length; s++) {
       const line = document.createElement('div');
@@ -31,7 +33,13 @@ module.exports = function(TimeVisualizer) {
       oldLength = snippet.length;
       document.body.style.cursor = 'move';
       snippetDom.style.cursor = 'move';
+
+      snippetDom.classList.add('selected');
     }
+    document.addEventListener('mousedown', function(e) {
+      if (e.path.includes(snippetDom)) return;
+      snippetDom.classList.remove('selected');
+    });
     document.addEventListener('mouseup', function(e) {
       snippetClicked = false;
       document.body.style.cursor = '';
@@ -47,6 +55,11 @@ module.exports = function(TimeVisualizer) {
       update();
       snippet.snippetLine.update(true);
     });
+
+    snippetDom.ondblclick = function(e) {
+      console.log('Double click!');
+    }
+
     line.appendChild(snippetDom);
 
     update();
@@ -122,12 +135,16 @@ module.exports = function(TimeVisualizer) {
         snippets[s].style.width = timelineSnippet.length * pixelsPerSecond;
       }
     }
+
+    // Update playhead location
+    playheadDom.style.left = (playheadTime - timeStart) * pixelsPerSecond;
   }
 
   function setPlayhead(time) {
     const timeStart = TimeVisualizer.getTimeStart();
     const pixelsPerSecond = TimeVisualizer.getPixelsPerSecond();
 
+    playheadTime = time;
     playheadDom.style.left = (time - timeStart) * pixelsPerSecond;
   }
 

@@ -47,6 +47,7 @@ class Timeline {
     if (this.playing) this.playing = false;
     this.previewTime = time;
     this.update(true);
+    this.TimelineVisuals.setPlayhead(time);
     return this;
   }
 

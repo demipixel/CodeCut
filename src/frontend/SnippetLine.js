@@ -57,6 +57,8 @@ class SnippetLine {
     // and need to search for the snippet to update/render
     if (hardSearch) {
       const oldSnippet = this.currentSnippet;
+      this.currentSnippet = null;
+      this.currentSnippetIndex = 0;
       for (let i = 0; i < this.snippets.length; i++) {
         this.currentSnippetIndex = i;
         if (this.snippets[i].timeInside(this.timeline.previewTime)) {

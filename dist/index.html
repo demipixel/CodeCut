@@ -1,6 +1,11 @@
 <html>
   <head>
+    <link rel="stylesheet" href="/vendors/codemirror/codemirror.css">
+    <link rel="stylesheet" href="/vendors/codemirror/monokai.css">
+
     <script src="/codecut.js"></script>
+
+
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body onLoad="CodeCut()">
@@ -17,6 +22,10 @@
     </div>
     <br>
     <div id="canvas-container"></canvas>
+    <div id="code-editor">
+      <textarea id="main-editor" style="display: none"></textarea>
+      <textarea id="secondary-editor" style="display: none"></textarea>
+    </div>
 
   </body>
 </html>

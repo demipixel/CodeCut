@@ -99,8 +99,6 @@ class Snippet {
 
     // Don't need to reparse jack shit, we're on the same waypoint dumbass
     if (oldWaypointIndex == this.currentWaypointIndex) return;
-
-    console.log('Waypoint handled now at '+this.currentWaypointIndex);
     
     // If the new current waypoint is AHEAD of the old one,
     // we only parse the new waypoints 'til then.
@@ -172,6 +170,7 @@ class Snippet {
     this.active = false;
     this.destroyNodePixi();
     this.node = null;
+    this.currentWaypointIndex = -1;
   }
 
   destroyNodePixi() {

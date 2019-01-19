@@ -31,7 +31,16 @@ body, html {
   position: relative;
   top: 2px;
   left: 0px;
+  border-radius: 4px;
   cursor: pointer;
+
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+.snippet.selected {
+  border: 2px solid gold;
 }
 
 .snippet-edge-gripper  {
@@ -58,4 +67,13 @@ body, html {
   position: absolute;
   top: 0px;
   left: 0px;
+}
+
+.CodeMirror {
+  height: 150px;
+  margin-bottom: 2px;
+}
+
+#code-editor {
+  width: 50%;
 }
