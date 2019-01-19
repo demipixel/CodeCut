@@ -1,0 +1,28 @@
+{
+  "name": "codecut",
+  "version": "1.0.0",
+  "description": "## Techs",
+  "main": "index.js",
+  "scripts": {
+    "compile": "node scripts/compile.js",
+    "watch:src": "nodemon --watch src/ --watch test/ --exec npm run-script compile",
+    "start": "npm run watch:src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/demipixel/CodeCut.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/demipixel/CodeCut/issues"
+  },
+  "homepage": "https://github.com/demipixel/CodeCut#readme",
+  "dependencies": {
+    "browserify": "^16.2.3",
+    "pixi.js": "^4.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}

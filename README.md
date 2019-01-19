@@ -38,7 +38,7 @@
 
 ## Time Breakdown
 
-- Initial Lucas Coding Session (31 hours remaining)
-- Party (27 hours remaining)
-- Sleep (22 hours remaining)
-- Pitch work (16 hours remaining)
+- Initial Lucas Coding Session (30 hours remaining)
+- Party (26 hours remaining)
+- Sleep (21 hours remaining)
+- Pitch work (15 hours remaining)
