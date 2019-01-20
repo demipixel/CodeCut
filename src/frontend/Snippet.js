@@ -8,7 +8,8 @@ class Snippet {
     // All units are in seconds.
     this.snippetLine = snippetLine;
     this.pixiContainer = pixiContainer;
-    this.parentClass = parentClass || 'Graphics'; // Do not use for now
+    this.dom = null;
+    this.parentClass = parentClass; // Do not use for now
     this.node = null;
     this.start = start;
     this.length = 1;
@@ -43,20 +44,23 @@ class Snippet {
       }
       this.currentWaypoint = this.nextWaypoint;
       this.currentWaypointIndex++;
+      console.log('Hit waypoint!');
+      console.log(this.currentWaypointIndex, this.node['waypoint_'+this.currentWaypointIndex+'_hit'].toString());
       this.node['waypoint_'+this.currentWaypointIndex+'_hit'](PIXI);
+    }
+
+    // Handle waypoints
+    if (this.currentWaypoint) {
+      this.node['waypoint_'+this.currentWaypointIndex+'_tick'](
+        PIXI,
+        timeInSnippet  - this.currentWaypoint.snippetTime,
+        timeInSnippet,
+        (this.nextWaypoint ? this.nextWaypoint.snippetTime : this.length) - this.currentWaypoint.snippetTime
+      );
     }
 
     // Run the tick function on the user's custom code
     this.node.tick(PIXI, timeInSnippet);
-
-    // Handle waypoints
-    if (!this.currentWaypoint) return;
-    this.node['waypoint_'+this.currentWaypointIndex+'_tick'](
-      PIXI,
-      timeInSnippet  - this.currentWaypoint.start,
-      timeInSnippet,
-      (this.nextWaypoint ? this.nextWaypoint.start : this.length) - this.currentWaypoint.start
-    );
   }
 
   addWaypoint(snippetTime=0) {
@@ -77,11 +81,57 @@ class Snippet {
 
     if (indexOfWaypoint == -1) this.waypoints.push(waypoint);
 
+    this.deactivate();
+    this.snippetLine.update(false, true);
+
+    this.snippetLine.timeline.TimelineVisuals.updateWaypoints(this);
+
     return waypoint;
+  }
+
+  removeWaypoint(waypoint) {
+    const index = this.waypoints.indexOf(waypoint);
+    if (index == -1) return false;
+
+    this.waypoints.splice(index, 1);
+    this.deactivate();
+    this.snippetLine.update(false, true);
+    return true;
+  }
+
+  fixWaypointOrder(waypoint) {
+    let index = this.waypoints.indexOf(waypoint);
+    if (index == -1) return false;
+
+    let changed = false;
+    while (index != this.waypoints.length - 1 &&
+            this.waypoints[index+1].snippetTime < this.waypoints[index].snippetTime) {
+      console.log(this.waypoints[index+1].snippetTime, this.waypoints[index].snippetTime);
+      const tmp = this.waypoints[index+1];
+      this.waypoints[index+1] = this.waypoints[index];
+      this.waypoints[index] = tmp;
+      index++;
+      changed = true;
+    }
+
+    if (changed) {
+      this.deactivate();
+      this.snippetLine.update(false, true);
+    }
   }
 
   get nextWaypoint() {
     return this.waypoints[this.currentWaypointIndex+1];
+  }
+
+  waypointAtTime(snippetTime, ignoreWaypoint) {
+    for (let w = 0; w < this.waypoints.length; w++) {
+      if (this.waypoints[w] == ignoreWaypoint) continue;
+      if (this.waypoints[w].snippetTime < snippetTime) continue;
+      else if (this.waypoints[w].snippetTime == snippetTime) return true;
+      else return false;
+    }
+    return false;
   }
 
   reparseWaypoints(timeInSnippet) {
@@ -147,7 +197,7 @@ class Snippet {
     for (let w = 0; w < this.waypoints.length; w++) {
       const waypoint = this.waypoints[w];
       this.generatedClass.prototype['waypoint_'+w+'_hit'] = eval('(function(PIXI){'+waypoint.hitCode+'})');
-      this.generatedClass.prototype['waypoint_'+w+'_tick'] = eval('(function(PIXI, time, nodeTime, waypointLength){'+waypoint.tickCode+'})');
+      this.generatedClass.prototype['waypoint_'+w+'_tick'] = eval('(function(PIXI, time, nodeTime, length){'+waypoint.tickCode+'})');
       this.generatedClass.prototype['waypoint_'+w+'_end'] = eval('(function(PIXI){'+waypoint.endCode+'})');
     }
 
@@ -171,10 +221,16 @@ class Snippet {
     this.destroyNodePixi();
     this.node = null;
     this.currentWaypointIndex = -1;
+    this.currentWaypoint = null;
+  }
+
+  remove() {
+    this.dom.remove();
+    this.snippetLine.removeSnippet(this);
   }
 
   destroyNodePixi() {
-    if (this.node) {
+    if (this.node && this.node.pixi && this.node.pixi.parent) {
       this.node.pixi.parent.removeChild(this.node);
       this.node.pixi.destroy({children:true, texture:true, baseTexture:true});
     }

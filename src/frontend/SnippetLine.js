@@ -9,6 +9,7 @@ const Snippet = require('./Snippet');
 class SnippetLine {
   constructor(timeline) {
     this.timeline = timeline;
+    this.dom = null;
     this.pixiContainer = new PIXI.Container();
     this.timeline.pixiApp.stage.addChild(this.pixiContainer);
 
@@ -22,6 +23,7 @@ class SnippetLine {
     this.currentSnippetIndex = 0;
   }
 
+  // Returns false if inside another snippet and does nothing!
   newSnippet(parentClass, start) {
     const snippet = new Snippet(this, this.pixiContainer, parentClass, start);
     
@@ -29,6 +31,8 @@ class SnippetLine {
     let indexOfSnippet = -1;
     for (let i = 0; i < this.snippets.length; i++) {
       if (this.snippets[i].start < start) continue;
+
+      if (this.snippets[i].timeInside(start)) return false;
 
       this.snippets.splice(i, 0, snippet);
       indexOfSnippet = i;
@@ -38,21 +42,40 @@ class SnippetLine {
     // Wasn't before any existing snippet, so just add it to the end
     if (indexOfSnippet == -1) this.snippets.push(snippet);
     else {
-      const maxSnippetLength = this.snippets[indexOfSnippet].start - snippet.start;
+      const maxSnippetLength = this.snippets[indexOfSnippet + 1].start - snippet.start;
       snippet.length = Math.min(snippet.length, maxSnippetLength);
     }
 
-    this.timeline.TimelineVisuals.addSnippet(
-      this.timeline.snippetLines.indexOf(this), // Get this snippet-line number
-      (indexOfSnippet + this.snippets.length) % this.snippets.length, // Index of snippet
-      snippet
-    );
+    this.timeline.TimelineVisuals.addSnippet(snippet);
 
     return snippet;
   }
 
+  removeSnippet(snippet) {
+    const index = this.snippets.indexOf(snippet);
+    if (index == -1) return false;
+    this.snippets[index].deactivate();
+    this.snippets.splice(index, 1);
+  }
+
+  snippetInTime(time, ignoreSnippet) {
+    for (let s = 0; s < this.snippets.length; s++) {
+      if (this.snippets[s] == ignoreSnippet) continue;
+      if (this.snippets[s].start > time) return false;
+      else if (time < this.snippets[s].start + this.snippets[s].length) return this.snippets[s];
+    }
+    return false;
+  }
+
+  snippetAfterTime(time) {
+    for (let s = 0; s < this.snippets.length; s++) {
+      if (this.snippets[s].start > time) return this.snippets[s];
+    }
+    return false;
+  }
+
   // Update snippet that is active
-  update(hardSearch) {
+  update(hardSearch=false, handleWaypoints=false) {
     // If hardSearch is true, we just scrubbed somewhere
     // and need to search for the snippet to update/render
     if (hardSearch) {
@@ -87,7 +110,7 @@ class SnippetLine {
 
     // Update our snippet!
     if (this.currentSnippet.timeInside(this.timeline.previewTime)) {
-      this.currentSnippet.update(this.timeline.previewTime - this.currentSnippet.start, hardSearch);
+      this.currentSnippet.update(this.timeline.previewTime - this.currentSnippet.start, hardSearch || handleWaypoints);
     }
   }
 }

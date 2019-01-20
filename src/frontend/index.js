@@ -6,10 +6,11 @@ function init() {
   document.getElementById('canvas-container').appendChild(pixiApp.view);
 
   const TimeVisualizer = require('./visuals/TimeVisualizer')();
-  const TimelineVisuals = require('./visuals/TimelineVisuals')(TimeVisualizer);
   const CodeEditor = require('./visuals/CodeEditor')();
+  const TimelineVisuals = require('./visuals/TimelineVisuals')(TimeVisualizer, CodeEditor);
   const mainTimeline = new Timeline(pixiApp, TimelineVisuals);
   window.timeline = mainTimeline;
+  mainTimeline.TimelineVisuals.addSnippetLines(mainTimeline);
   init.events = require('./events')(mainTimeline);
 }
 

@@ -23,16 +23,21 @@ body, html {
   margin-bottom: 5px;
   border-top: 1px solid #666;
   border-bottom: 1px solid #666;
+  position: relative;
+  top: 0px;
+  left: 0px;
 }
 
 .snippet {
   height: 26px;
   background: #333;
-  position: relative;
+  position: absolute;
   top: 2px;
   left: 0px;
   border-radius: 4px;
   cursor: pointer;
+  border: 1px solid #444;
+  overflow: hidden;
 
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -44,9 +49,9 @@ body, html {
 }
 
 .snippet-edge-gripper  {
-  width: 5px;
+  width: 8px;
   position: absolute;
-  left: 0px;
+  left: -4px;
   top: 0px;
   height: 100%;
 }
@@ -57,13 +62,13 @@ body, html {
 
 .snippet-edge-gripper-right {
   left: unset;
-  right: 0px;
+  right: -4px;
 }
 
 #playhead {
-  width: 1px;
+  width: 2px;
   height: 40px;
-  background: #ccc;
+  background: #ea0;
   position: absolute;
   top: 0px;
   left: 0px;
@@ -71,9 +76,40 @@ body, html {
 
 .CodeMirror {
   height: 150px;
-  margin-bottom: 2px;
+  margin-bottom: 5px;
 }
 
 #code-editor {
   width: 50%;
+}
+
+.unsaved {
+  border-top: 3px solid #f60;
+}
+
+.CodeMirror:not(.unsaved) {
+  border-top: 3px solid #0d7;
+}
+
+.waypoint {
+  height: 20px;
+  width: 8px;
+  background:  #c80;
+  border-radius: 3px;
+  position: absolute;
+  top: 2px;
+  left: 0px;
+
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+.waypoint.selected {
+  border: 1px solid white;
+}
+
+.snippet.selected .waypoint {
+  top: 1px;
+  margin-left: -1px;
 }

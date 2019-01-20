@@ -16,7 +16,6 @@ class Timeline {
 
     this.addLine();
     this.TimelineVisuals = TimelineVisuals;
-    this.TimelineVisuals.addSnippetLines(this);
   }
 
   addLine() {

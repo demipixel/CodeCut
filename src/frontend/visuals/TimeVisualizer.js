@@ -29,7 +29,7 @@ module.exports = function() {
   let isScrubbing = false;
   canvas.onmousedown = function(e) {
     isScrubbing = true;
-    const time = (e.clientX - canvas.clientLeft) / getPixelsPerSecond() + timeStart;
+    const time = Math.max(0, (e.clientX - canvas.clientLeft) / getPixelsPerSecond() + timeStart);
     timeline.scrub(time);
   }
 
@@ -39,7 +39,7 @@ module.exports = function() {
 
   document.addEventListener('mousemove', function(e) {
     if (!isScrubbing) return;
-    const time = (e.clientX - canvas.clientLeft) / getPixelsPerSecond() + timeStart;
+    const time = Math.max(0, (e.clientX - canvas.clientLeft) / getPixelsPerSecond() + timeStart);
     timeline.scrub(time);
   });
 
