@@ -1,5 +1,7 @@
 const browserify = require('browserify');
 const fs = require('fs');
+const server = require('../src/backend/server.js')
+
 
 if (!fs.existsSync('dist')) {
   fs.mkdirSync('dist');
@@ -12,3 +14,5 @@ browserify('src/frontend', {
   // .transform({ global: true }, 'uglifyify')
   .bundle()
   .pipe(fs.createWriteStream('dist/codecut.js'));
+
+

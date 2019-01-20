@@ -11,6 +11,17 @@
   <body onLoad="CodeCut()">
     <h1>CodeCut</h1>
     <button id="toggle-play-pause" onClick="CodeCut.events.togglePlayPause()">Play</button>
+    <style>
+      a#downloadLink {
+        display: block;
+        margin: 0 0 1em 0;
+        min-height: 1.2em;
+      }
+      p#data {
+        min-height: 6em;
+      }
+      </style>
+    <a id="downloadLink" download="coldcut.webm" name="coldcut.webm" href = ''></a>
     <span id="preview-time">Preview Time: 0</span>
     <br><br>
     <div id="timeline">
