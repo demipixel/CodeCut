@@ -1,5 +1,7 @@
 <html>
   <head>
+    <link href="https://fonts.googleapis.com/css?family=Kanit" rel="stylesheet">
+
     <link rel="stylesheet" href="/vendors/codemirror/codemirror.css">
     <link rel="stylesheet" href="/vendors/codemirror/monokai.css">
 
@@ -12,14 +14,26 @@
 
     <div id="main-container">
       <div id="top-half">
-        <h1>CodeCut</h1>
-        <button id="toggle-play-pause" onClick="CodeCut.events.togglePlayPause()">Play</button>
-        <button id="new-snippet-line" onClick="CodeCut.events.newSnippetLine()">New Snippet Line</button>
+        <img id="banner" src="/img/256-CodeCutBanner2.png" alt="Code Cut Banner" height="40">
+        <span class ="button-divider"></span>
+        <span class="top-button" id="new-snippet" onClick="alert('Adding new snippet')"><img src="/img/256-Snippet-01.png" alt="New Snippet" height="30"></span>
+        <span class="top-button" id="new-snippet-line" onClick="CodeCut.events.newSnippetLine()"><img src="/img/256-Lines-01.png" alt="New Snippet Line" height="30"></span>
+        <span class ="button-divider"></span>
+        <span class="top-button" id="play-from-start" onClick="alert('Playing from start')"><img src="/img/256-Go_to_Start-01.png" alt="Play from Start" height="30"></span>
+        <span class="top-button" onClick="CodeCut.events.togglePlayPause()"><img src="/img/256-Play-01.png" id="toggle-play-pause" alt="Play" height="30"></span>
+        <span class="top-button" id="stop" onClick="alert('Stopping video')"><img src="/img/256-Stop-01.png" alt="Stop" height="30"></span>
+        <span class ="button-divider"></span>
+        <span id="preview-time" style="padding-left:8px;padding-right:8p;font-size:30px;">00:00:00</span>
+        <span class ="button-divider"></span>
         <input type="file" style="display:none;" id="inputfile" onChange="CodeCut.events.importFile(event)" />
-        <button id="import-file" onClick="document.getElementById('inputfile').click()">Import</button>
-        <span id="preview-time">Preview Time: 0</span>
-        <br><br>
-        <div id="timeline">
+        <span style="float:right; margin-top: 25px; margin-right: 25px;">
+          <span class="top-button" id="save" onClick="alert('Saving file')"><img src="/img/256-Save-01.png" alt="Save" height="30"></span>
+          <span class="top-button" id="import-file" onClick="document.getElementById('inputfile').click()"><img src="/img/256-Download-01.png" alt="Import" height="30"></span>
+          <span class="top-button" id="export-file" onClick="alert('Exporting file')"><img src="/img/256-Export2-01.png" alt="Export File" height="30"></span>
+          <span class="top-button" id="options" onClick="alert('Options')"><img src="/img/256-Options-01.png" alt="Options" height="30"></span>
+        </span>
+
+        <div id="timeline" style="margin-top: 10px;">
           <div id="playhead"></div>
           <div id="time-visualizer">
             <canvas id="time-visualizer-canvas"></canvas>
