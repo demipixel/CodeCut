@@ -20,7 +20,7 @@ function init() {
   window.timeline = mainTimeline;
   mainTimeline.addLine();
   init.events = require('./events')(mainTimeline);
-  Capture(60, mainTimeline);
+ // Capture(60, mainTimeline);
   
 }
 

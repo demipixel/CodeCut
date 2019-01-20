@@ -1,4 +1,4 @@
-
+const Capture = require('./capture.js')
 module.exports = function(timeline) {
   function togglePlayPause() {
     const button = document.getElementById('toggle-play-pause');
@@ -32,6 +32,11 @@ module.exports = function(timeline) {
     reader.readAsText(input.files[0]);
   }
 
+  function exportFile(){
+    Capture(100, timeline);
+   
+}
+  
   document.addEventListener('keydown', function(e) {
     if (document.activeElement.tagName == 'TEXTAREA') return;
     if (e.code == 'Space') {
@@ -56,6 +61,7 @@ module.exports = function(timeline) {
   return {
     togglePlayPause,
     newSnippetLine,
-    importFile
+    importFile,
+    exportFile
   }
 }

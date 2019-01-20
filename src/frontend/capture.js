@@ -35,23 +35,26 @@ console.log(downloadLink)
 		chunks.push(e.data);
 	};
 
-// 	let renderFrame = (t) => {
-// 		if(recording){
-// 			time.scrub(count/60.0);
-// 			mediaRec.stream.getTracks()[0].requestFrame();
+	let renderFrame = (t) => {
+		if(recording){
+			time.scrub(count/FPS);
+			mediaRec.stream.getTracks()[0].requestFrame();
+			count++;
+		}
 
-// 		}
+		if(count/FPS == 5){
+			mediaRec.stop();
+			return
+		}
 
-// 		if(count/60 == 20){
-// 			mediaRec.stop();
-// 		}
-// 		console.log('requesting animation');
-//   requestAnimationFrame(renderFrame);
+		console.log('requesting animation');
+  requestAnimationFrame(renderFrame);
 
-// 	}
+	}
  
 	mediaRec.onstart = () =>{
 		recording = true;
+		renderFrame(0)
 	}
 
 	mediaRec.onstop = function(){
@@ -63,6 +66,18 @@ console.log(downloadLink)
 	
 					var videoURL = window.URL.createObjectURL(blob);
 					console.log(videoURL);
+
+					const a = document.createElement('a');
+					a.style.display = 'none';
+					a.text.fontcolor('yellow')
+					a.href = videoURL;
+					a.download = 'test.webm';
+					document.body.appendChild(a);
+					a.click();
+					setTimeout(() => {
+					  document.body.removeChild(a);
+					  window.URL.revokeObjectURL(url);
+					}, 100);
 	
 					// downloadLink.href = videoURL;
 					// videoElement.src = videoURL;	
@@ -86,13 +101,13 @@ console.log(downloadLink)
 	console.log(mediaRec.stream.getTracks());
 
 	console.log('**')
-	mediaRec.start(10);	
-	for(startTime; startTime <= endTime; startTime += (1.0/FPS)){
-		time.scrub(startTime);
-		mediaRec.stream.getTracks()[0].requestFrame();
-		mediaRec.requestData();
-	}
-	 mediaRec.stop();
+	mediaRec.start();	
+	// for(startTime; startTime <= endTime; startTime += (1.0/FPS)){
+	// 	time.scrub(startTime);
+	// 	mediaRec.stream.getTracks()[0].requestFrame();
+	// 	mediaRec.requestData();
+	// }
+	//  mediaRec.stop();
 }
 
 module.exports = exportVid;

@@ -26,10 +26,11 @@
         <span id="preview-time" style="padding-left:8px;padding-right:8p;font-size:30px;">00:00:00</span>
         <span class ="button-divider"></span>
         <input type="file" style="display:none;" id="inputfile" onChange="CodeCut.events.importFile(event)" />
+        <
         <span style="float:right; margin-top: 25px; margin-right: 25px;">
           <span class="top-button" id="save" onClick="alert('Saving file')"><img src="/img/256-Save-01.png" alt="Save" height="30"></span>
           <span class="top-button" id="import-file" onClick="document.getElementById('inputfile').click()"><img src="/img/256-Download-01.png" alt="Import" height="30"></span>
-          <span class="top-button" id="export-file" onClick="alert('Exporting file')"><img src="/img/256-Export2-01.png" alt="Export File" height="30"></span>
+          <span class="top-button" id="export-file" onClick="CodeCut.events.exportFile()"><img src="/img/256-Export2-01.png" alt="Export File" height="30"></span>
           <span class="top-button" id="options" onClick="alert('Options')"><img src="/img/256-Options-01.png" alt="Options" height="30"></span>
         </span>
 
