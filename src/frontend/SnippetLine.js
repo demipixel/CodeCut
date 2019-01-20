@@ -24,7 +24,7 @@ class SnippetLine {
   }
 
   // Returns false if inside another snippet and does nothing!
-  newSnippet(parentClass, start) {
+  newSnippet(start, parentClass) {
     const snippet = new Snippet(this, this.pixiContainer, parentClass, start);
     
     // Insert into snippets such that snippets remains sorted
@@ -110,7 +110,7 @@ class SnippetLine {
 
     // Update our snippet!
     if (this.currentSnippet.timeInside(this.timeline.previewTime)) {
-      this.currentSnippet.update(this.timeline.previewTime - this.currentSnippet.start, hardSearch || handleKeyframes);
+      return this.currentSnippet.update(this.timeline.previewTime - this.currentSnippet.start, hardSearch || handleKeyframes);
     }
   }
 }

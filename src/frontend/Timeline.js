@@ -13,18 +13,19 @@ class Timeline {
     this.previewSpeedScalar = 1.0;
 
     this.lastPreviewFrameTime = Date.now();
-
-    this.addLine();
     this.TimelineVisuals = TimelineVisuals;
   }
 
   addLine() {
     this.snippetLines.push(new SnippetLine(this));
+    console.log(this.TimelineVisuals);
+    this.TimelineVisuals.updateSnippetLines();
   }
 
   removeLine(index) {
+    this.snippetLines[index].dom.remove();
     this.snippetLines.splice(index, 1);
-    this.TimelineVisuals.removeSnippetLine(index);
+    // this.TimelineVisuals.updateSnippetLines();
   }
 
   // Play preview

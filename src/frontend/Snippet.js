@@ -29,8 +29,9 @@ class Snippet {
   }
   
   update(timeInSnippet, reparseKeyframes)  {
+    let errors = null;
     if (!this.active) {
-      this.updateNodeCode();
+      errors = this.updateNodeCode();
       this.active = true;
     }
 
@@ -44,8 +45,6 @@ class Snippet {
       }
       this.currentKeyframe = this.nextKeyframe;
       this.currentKeyframeIndex++;
-      console.log('Hit keyframe!');
-      console.log(this.currentKeyframeIndex, this.node['keyframe_'+this.currentKeyframeIndex+'_hit'].toString());
       this.node['keyframe_'+this.currentKeyframeIndex+'_hit'](PIXI);
     }
 
@@ -61,6 +60,8 @@ class Snippet {
 
     // Run the tick function on the user's custom code
     this.node.tick(PIXI, timeInSnippet);
+
+    return errors;
   }
 
   addKeyframe(snippetTime=0) {
@@ -106,7 +107,6 @@ class Snippet {
     let changed = false;
     while (index != this.keyframes.length - 1 &&
             this.keyframes[index+1].snippetTime < this.keyframes[index].snippetTime) {
-      console.log(this.keyframes[index+1].snippetTime, this.keyframes[index].snippetTime);
       const tmp = this.keyframes[index+1];
       this.keyframes[index+1] = this.keyframes[index];
       this.keyframes[index] = tmp;
@@ -191,7 +191,11 @@ class Snippet {
     
 
     // Eventually put try/catch around this and dump error to user
-    this.generatedClass.prototype.init = eval('(function(PIXI){'+this.initCode+'})');
+    try {
+      this.generatedClass.prototype.init = eval('(function(PIXI){'+this.initCode+'})');
+    } catch (e) {
+
+    }
     this.generatedClass.prototype.tick = eval('(function(PIXI, time){'+this.tickCode+'})');
 
     for (let w = 0; w < this.keyframes.length; w++) {

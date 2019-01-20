@@ -7,6 +7,7 @@ require('../../../node_modules/codemirror/addon/edit/closebrackets');
 
 module.exports = function() {
   const editors = [];
+  const headers = [];
   const saveLocation = {};
   for (let i = 0; i < 3; i++) {
     const id = 'editor-'+(['one', 'two', 'three'])[i];
@@ -25,6 +26,12 @@ module.exports = function() {
       codeEditor.getWrapperElement().classList.add('unsaved');
     });
 
+    const header = document.createElement('div');
+    header.classList.add('header');
+    codeEditor.getWrapperElement().appendChild(header);
+
+    headers[i] = header;
+
     codeEditor.setOption("extraKeys", {
       Tab: function(cm) {
         var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
@@ -33,6 +40,8 @@ module.exports = function() {
       'Cmd-S': () => save(i),
       'Cntrl-S': () => save(i)
     });
+
+    editors[i].getWrapperElement().style.display = 'none';
   }
 
   function save(i) {
@@ -50,9 +59,18 @@ module.exports = function() {
 
   function setSaveLocation(index, obj, key, cb) {
     saveLocation[index] = [obj, key, cb];
+    editors[index].getWrapperElement().style.display = '';
+  }
+
+  function hide(index) {
+    editors[index].getWrapperElement().style.display = 'none';
+  }
+
+  function setHeaderText(index, text) {
+    headers[index].innerText = text;
   }
 
   return {
-    editors, markSaved, setSaveLocation
+    editors, markSaved, setSaveLocation, hide, setHeaderText
   };
 }

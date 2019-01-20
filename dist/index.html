@@ -9,23 +9,30 @@
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body onLoad="CodeCut()">
-    <h1>CodeCut</h1>
-    <button id="toggle-play-pause" onClick="CodeCut.events.togglePlayPause()">Play</button>
-    <span id="preview-time">Preview Time: 0</span>
-    <br><br>
-    <div id="timeline">
-      <div id="playhead"></div>
-      <div id="time-visualizer">
-        <canvas id="time-visualizer-canvas"></canvas>
+
+    <div id="main-container">
+      <div id="top-half">
+        <h1>CodeCut</h1>
+        <button id="toggle-play-pause" onClick="CodeCut.events.togglePlayPause()">Play</button>
+        <button id="new-snippet-line" onClick="CodeCut.events.newSnippetLine()">New Snippet Line</button>
+        <span id="preview-time">Preview Time: 0</span>
+        <br><br>
+        <div id="timeline">
+          <div id="playhead"></div>
+          <div id="time-visualizer">
+            <canvas id="time-visualizer-canvas"></canvas>
+          </div>
+          <div id="snippet-lines"></div>
+        </div>
       </div>
-      <div id="snippet-lines"></div>
-    </div>
-    <br>
-    <div id="canvas-container"></canvas>
-    <div id="code-editor">
-      <textarea id="editor-one" style="display: none"></textarea>
-      <textarea id="editor-two" style="display: none"></textarea>
-      <textarea id="editor-three" style="display: none"></textarea>
+      <div id="lower-half">
+        <div id="code-editor">
+          <textarea id="editor-one" style="display: none"></textarea>
+          <textarea id="editor-two" style="display: none"></textarea>
+          <textarea id="editor-three" style="display: none"></textarea>
+        </div>
+        <div id="canvas-container"></div>
+      </div>
     </div>
 
   </body>

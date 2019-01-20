@@ -11,7 +11,12 @@ module.exports = function(timeline) {
     }
   }
 
+  function newSnippetLine() {
+    timeline.addLine();
+  }
+
   window.addEventListener('keydown', function(e) {
+    if (document.activeElement.tagName == 'TEXTAREA') return;
     if (e.code == 'Space') {
       e.preventDefault();
       togglePlayPause();
@@ -19,6 +24,7 @@ module.exports = function(timeline) {
   });
 
   return {
-    togglePlayPause
+    togglePlayPause,
+    newSnippetLine
   }
 }

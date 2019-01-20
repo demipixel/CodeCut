@@ -10,7 +10,7 @@ function init() {
   const TimelineVisuals = require('./visuals/TimelineVisuals')(TimeVisualizer, CodeEditor);
   const mainTimeline = new Timeline(pixiApp, TimelineVisuals);
   window.timeline = mainTimeline;
-  mainTimeline.TimelineVisuals.addSnippetLines(mainTimeline);
+  mainTimeline.addLine();
   init.events = require('./events')(mainTimeline);
 }
 

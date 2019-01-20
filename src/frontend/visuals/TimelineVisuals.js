@@ -3,11 +3,24 @@ module.exports = function(TimeVisualizer, CodeEditor) {
   const playheadDom = document.getElementById('playhead');
   let playheadTime = 0;
 
-  function addSnippetLines(timeline) {
+  function updateSnippetLines() {
     for (let s = 0; s < timeline.snippetLines.length; s++) {
+      const snippetLine = timeline.snippetLines[s];
+      if (snippetLine.dom) continue;
       const lineDom = document.createElement('div');
-      timeline.snippetLines[s].dom = lineDom;
+      snippetLine.dom = lineDom;
       lineDom.classList.add('snippet-line');
+      lineDom.onclick = function(e) {
+        if (e.shiftKey) {
+          const canvas = document.getElementById('time-visualizer-canvas');
+          const pixelsPerSecond = TimeVisualizer.getPixelsPerSecond();
+          const timeStart = TimeVisualizer.getTimeStart();
+          const time = (e.clientX - canvas.clientLeft) / pixelsPerSecond + timeStart;
+
+          if (snippetLine.snippetInTime(time)) return;
+          snippetLine.newSnippet(time);
+        }
+      }
       document.getElementById('snippet-lines').appendChild(lineDom);
     }
     update();
@@ -74,7 +87,6 @@ module.exports = function(TimeVisualizer, CodeEditor) {
       // Handle changing length if needed
       const snippetAfter = snippet.snippetLine.snippetAfterTime(Math.max(0, oldStart + movedSeconds));
       if (snippetAfter) {
-        console.log(snippetAfter);
         snippet.length = Math.min(oldLength, snippetAfter.start - snippet.start);
       } else  {
         snippet.length = oldLength;
@@ -96,6 +108,16 @@ module.exports = function(TimeVisualizer, CodeEditor) {
       }
       CodeEditor.setSaveLocation(0, snippet, 'initCode', save);
       CodeEditor.setSaveLocation(1, snippet, 'tickCode', save);
+      CodeEditor.setHeaderText(0, 'init(PIXI)');
+      CodeEditor.setHeaderText(1, 'tick(PIXI, time)');
+      CodeEditor.hide(2);
+
+      const editing = document.getElementsByClassName('editing');
+      for (let i = 0; i < editing.length; i++) {
+        editing[i].classList.remove('editing');
+      }
+
+      snippetDom.classList.add('editing');
     }
 
     lineDom.appendChild(snippetDom);
@@ -227,6 +249,17 @@ module.exports = function(TimeVisualizer, CodeEditor) {
         CodeEditor.setSaveLocation(0, keyframe, 'hitCode', save);
         CodeEditor.setSaveLocation(1, keyframe, 'tickCode', save);
         CodeEditor.setSaveLocation(2, keyframe, 'endCode', save);
+
+        CodeEditor.setHeaderText(0, 'hit(PIXI)');
+        CodeEditor.setHeaderText(1, 'tick(PIXI, time, length, nodeTime)');
+        CodeEditor.setHeaderText(2, 'end(PIXI)');
+
+        const editing = document.getElementsByClassName('editing');
+        for (let i = 0; i < editing.length; i++) {
+          editing[i].classList.remove('editing');
+        }
+
+        keyframeDom.classList.add('editing');
       }
       snippet.dom.appendChild(keyframeDom);
     }
@@ -267,7 +300,7 @@ module.exports = function(TimeVisualizer, CodeEditor) {
   TimeVisualizer.setRenderCallback(update);
 
   return {
-    addSnippetLines,
+    updateSnippetLines,
     addSnippet,
     setPlayhead,
     updateKeyframes
