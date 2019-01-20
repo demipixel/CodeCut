@@ -4,10 +4,10 @@ module.exports = function(timeline) {
     const button = document.getElementById('toggle-play-pause');
     if (timeline.playing) {
       timeline.pause();
-      button.innerText = 'Play';
+      button.src = '/img/256-Play-01.png';
     } else {
       timeline.play();
-      button.innerText = 'Pause';
+      button.src = '/img/256-Pause-01.png';
     }
   }
 
@@ -32,13 +32,26 @@ module.exports = function(timeline) {
     reader.readAsText(input.files[0]);
   }
 
-  window.addEventListener('keydown', function(e) {
+  document.addEventListener('keydown', function(e) {
     if (document.activeElement.tagName == 'TEXTAREA') return;
     if (e.code == 'Space') {
       e.preventDefault();
       togglePlayPause();
     }
   });
+
+  document.onkeydown = function (e) {
+    e = e || window.event;//Get event
+    if (e.ctrlKey || e.metaKey) {
+        var c = e.which || e.keyCode;//Get key code
+        switch (c) {
+            case 83://Block Ctrl+S
+                e.preventDefault();     
+                e.stopPropagation();
+            break;
+        }
+    }
+};
 
   return {
     togglePlayPause,

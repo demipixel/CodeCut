@@ -1,4 +1,5 @@
 const Keyframe = require('./Keyframe');
+const EasingFunctions = require('./utils/EasingFunctions');
 
 // This is basically a node on some snippet line with a length
 // It's the box on the timeline that renders something and has
@@ -41,17 +42,18 @@ class Snippet {
     // Have we hit the next keyframe? If so, that's our new keyframe.
     if (this.nextKeyframe && this.nextKeyframe.beenHit(timeInSnippet)) {
       if (this.currentKeyframeIndex != -1) {
-        this.node['keyframe_'+this.currentKeyframeIndex+'_end'](PIXI);
+        this.node['keyframe_'+this.currentKeyframeIndex+'_end'](PIXI, EasingFunctions);
       }
       this.currentKeyframe = this.nextKeyframe;
       this.currentKeyframeIndex++;
-      this.node['keyframe_'+this.currentKeyframeIndex+'_hit'](PIXI);
+      this.node['keyframe_'+this.currentKeyframeIndex+'_hit'](PIXI, EasingFunctions);
     }
 
     // Handle keyframes
     if (this.currentKeyframe) {
       this.node['keyframe_'+this.currentKeyframeIndex+'_tick'](
         PIXI,
+        EasingFunctions,
         timeInSnippet  - this.currentKeyframe.snippetTime,
         timeInSnippet,
         (this.nextKeyframe ? this.nextKeyframe.snippetTime : this.length) - this.currentKeyframe.snippetTime
@@ -59,7 +61,12 @@ class Snippet {
     }
 
     // Run the tick function on the user's custom code
-    this.node.tick(PIXI, timeInSnippet);
+    try {
+      this.node.tick(PIXI, EasingFunctions, timeInSnippet, this.length);
+    } catch (e) {
+      console.error('tick() Error:', e);
+      errors.push(e);
+    }
 
     return errors;
   }
@@ -163,8 +170,8 @@ class Snippet {
     // by other keyframes or tick()
     if (!skippedAhead) this.respawnNodeInstance();
     for (let i = startIndex; i <= endIndex; i++) {
-      if (i != 0) this.node['keyframe_'+(i-1)+'_end'](PIXI);
-      this.node['keyframe_'+i+'_hit'](PIXI);
+      if (i != 0) this.node['keyframe_'+(i-1)+'_end'](PIXI, EasingFunctions);
+      this.node['keyframe_'+i+'_hit'](PIXI, EasingFunctions);
     }
   }
 
@@ -188,32 +195,64 @@ class Snippet {
     // const generatedClass = class GeneratedClass extends superClass {}
 
     this.generatedClass = function() { this.pixi = null; };
+    const errors = [];
     
 
     // Eventually put try/catch around this and dump error to user
     try {
-      this.generatedClass.prototype.init = eval('(function(PIXI){'+this.initCode+'})');
+      this.generatedClass.prototype.init = eval('(function(PIXI, EASING){'+this.initCode+'})');
     } catch (e) {
-
+      errors.push(e);
+      this.generatedClass.prototype.init = () => {};
     }
-    this.generatedClass.prototype.tick = eval('(function(PIXI, time){'+this.tickCode+'})');
+    try {
+      this.generatedClass.prototype.tick = eval('(function(PIXI, EASING, time, nodeTime){'+this.tickCode+'})');
+    } catch (e) {
+      errors.push(e);
+      this.generatedClass.prototype.tick = () => {};
+    }
 
     for (let w = 0; w < this.keyframes.length; w++) {
       const keyframe = this.keyframes[w];
-      this.generatedClass.prototype['keyframe_'+w+'_hit'] = eval('(function(PIXI){'+keyframe.hitCode+'})');
-      this.generatedClass.prototype['keyframe_'+w+'_tick'] = eval('(function(PIXI, time, nodeTime, length){'+keyframe.tickCode+'})');
-      this.generatedClass.prototype['keyframe_'+w+'_end'] = eval('(function(PIXI){'+keyframe.endCode+'})');
+      try {
+        this.generatedClass.prototype['keyframe_'+w+'_hit'] = eval('(function(PIXI, EASING){'+keyframe.hitCode+'})');
+      } catch (e) {
+        errors.push(e);
+        this.generatedClass.prototype['keyframe_'+w+'_hit'] = () => {};
+      }
+      try {
+        this.generatedClass.prototype['keyframe_'+w+'_tick'] = eval('(function(PIXI, EASING, time, nodeTime, length){'+keyframe.tickCode+'})');
+      } catch (e) {
+        errors.push(e);
+        this.generatedClass.prototype['keyframe_'+w+'_tick'] = () => {};
+      }
+      try {
+        this.generatedClass.prototype['keyframe_'+w+'_end'] = eval('(function(PIXI, EASING){'+keyframe.endCode+'})');
+      } catch (e) {
+        errors.push(e);
+        this.generatedClass.prototype['keyframe_'+w+'_end'] = () => {};
+      }
     }
 
-    this.respawnNodeInstance();
+    const error  = this.respawnNodeInstance();
+    if (error) errors.push(error);
+
+    return errors;
   }
 
   respawnNodeInstance() {
+    let error = null;
     this.destroyNodePixi();
     this.node = new this.generatedClass();
     this.node.pixi = new PIXI.Graphics();
-    this.node.init();
+    try {
+      this.node.init(PIXI, EasingFunctions);
+    } catch (e) {
+      console.error('init() Error:', e);
+      error =  e;
+    }
     this.pixiContainer.addChild(this.node.pixi);
+    return error;
   }
 
   timeInside(time) {

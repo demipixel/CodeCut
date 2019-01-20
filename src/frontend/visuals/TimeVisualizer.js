@@ -5,7 +5,7 @@ module.exports = function() {
   const canvas = document.getElementById('time-visualizer-canvas');
   const ctx = canvas.getContext('2d');
   let zoomLevel = 2**-8; // One second = 1/(zoomLevel*2) pixels
-  let timeStart = 0;
+  let timeStart = -(2**6) * zoomLevel;
 
   let renderCb = null;
   document.getElementById('timeline').onwheel = function(e) {
