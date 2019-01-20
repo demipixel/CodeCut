@@ -10,6 +10,18 @@ module.exports = function(TimeVisualizer, CodeEditor) {
       const lineDom = document.createElement('div');
       snippetLine.dom = lineDom;
       lineDom.classList.add('snippet-line');
+
+      const removeLineDom = document.createElement('img');
+      removeLineDom.src = '/img/256-SubtractSnippet-01.png';
+      removeLineDom.classList.add('remove-snippet-line-button');
+      removeLineDom.onclick = function(e) {
+        const doIt = confirm('Are you sure you want to delete this line?');
+        if (doIt) {
+          timeline.removeLine(snippetLine);
+        }
+      }
+      lineDom.appendChild(removeLineDom);
+
       lineDom.onclick = function(e) {
         if (e.shiftKey) {
           const canvas = document.getElementById('time-visualizer-canvas');
@@ -104,12 +116,12 @@ module.exports = function(TimeVisualizer, CodeEditor) {
       CodeEditor.markSaved(1);
       const save = () => {
         snippet.deactivate();
-        snippet.snippetLine.update(false, true);
+        return snippet.snippetLine.update(false, true);
       }
       CodeEditor.setSaveLocation(0, snippet, 'initCode', save);
       CodeEditor.setSaveLocation(1, snippet, 'tickCode', save);
-      CodeEditor.setHeaderText(0, 'init(PIXI)');
-      CodeEditor.setHeaderText(1, 'tick(PIXI, time)');
+      CodeEditor.setHeaderText(0, 'init(PIXI, EASING)');
+      CodeEditor.setHeaderText(1, 'tick(PIXI, EASING, time, nodeTime)');
       CodeEditor.hide(2);
 
       const editing = document.getElementsByClassName('editing');
@@ -244,15 +256,15 @@ module.exports = function(TimeVisualizer, CodeEditor) {
         CodeEditor.markSaved(2);
         const save = () => {
           snippet.deactivate();
-          snippet.snippetLine.update(false, true);
+          return snippet.snippetLine.update(false, true);
         }
         CodeEditor.setSaveLocation(0, keyframe, 'hitCode', save);
         CodeEditor.setSaveLocation(1, keyframe, 'tickCode', save);
         CodeEditor.setSaveLocation(2, keyframe, 'endCode', save);
 
-        CodeEditor.setHeaderText(0, 'hit(PIXI)');
-        CodeEditor.setHeaderText(1, 'tick(PIXI, time, length, nodeTime)');
-        CodeEditor.setHeaderText(2, 'end(PIXI)');
+        CodeEditor.setHeaderText(0, 'hit(PIXI, EASING)');
+        CodeEditor.setHeaderText(1, 'tick(PIXI, EASING, time, length, nodeTime)');
+        CodeEditor.setHeaderText(2, 'end(PIXI, EASING)');
 
         const editing = document.getElementsByClassName('editing');
         for (let i = 0; i < editing.length; i++) {

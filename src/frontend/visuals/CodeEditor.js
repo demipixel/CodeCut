@@ -49,7 +49,15 @@ module.exports = function() {
     codeEditor.getWrapperElement().classList.remove('unsaved');
     if (saveLocation[i]) {
       saveLocation[i][0][saveLocation[i][1]] = codeEditor.getValue();
-      if (saveLocation[i][2]) saveLocation[i][2]();
+      if (saveLocation[i][2]) {
+        const errors = saveLocation[i][2]();
+        if  (errors.length > 0) {
+          errors.forEach(e => console.error(e));
+          codeEditor.getWrapperElement().classList.add('error');
+        } else {
+          codeEditor.getWrapperElement().classList.remove('error');
+        }
+      }
     }
   }
 

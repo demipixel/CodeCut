@@ -18,14 +18,15 @@ class Timeline {
 
   addLine() {
     this.snippetLines.push(new SnippetLine(this));
-    console.log(this.TimelineVisuals);
     this.TimelineVisuals.updateSnippetLines();
   }
 
-  removeLine(index) {
+  removeLine(line) {
+    const index = this.snippetLines.indexOf(line);
+    if (index == -1) return false;
     this.snippetLines[index].dom.remove();
     this.snippetLines.splice(index, 1);
-    // this.TimelineVisuals.updateSnippetLines();
+    return true;
   }
 
   // Play preview
@@ -48,6 +49,7 @@ class Timeline {
     this.previewTime = time;
     this.update(true);
     this.TimelineVisuals.setPlayhead(time);
+    this.setPreviewTime();
     return this;
   }
 
@@ -65,7 +67,7 @@ class Timeline {
       else this.previewTime += Math.max(1/this.previewFps, delta);
     }
 
-    document.getElementById('preview-time').innerText = 'Preview Time: '+this.previewTime.toFixed(2);
+    this.setPreviewTime();
 
     this.update();
     this.TimelineVisuals.setPlayhead(this.previewTime);
@@ -75,6 +77,13 @@ class Timeline {
     requestAnimationFrame(() => {
       this.tick();
     });
+  }
+
+  setPreviewTime() {
+    const minutes = (this.previewTime/60 < 10 ? '0' : '') + Math.floor(this.previewTime/60).toString();
+    const seconds = ((this.previewTime % 60) < 10 ? '0' : '') + Math.floor(this.previewTime % 60).toString();
+    const centiseconds = ((this.previewTime*60 % 60) < 10 ? '0' : '') + Math.floor(this.previewTime*60 % 60).toString();
+    document.getElementById('preview-time').innerText = minutes+':'+seconds+':'+centiseconds;
   }
 
   update(scrubbed) {
@@ -91,7 +100,7 @@ class Timeline {
 
   importObject(obj) {
     for (let i = this.snippetLines.length - 1; i >= 0; i--) {
-      this.removeLine(i);
+      this.removeLine(this.snippetLines[i]);
     }
     for (let s = 0; s < obj.snippetLines.length; s++) {
       this.addLine();
