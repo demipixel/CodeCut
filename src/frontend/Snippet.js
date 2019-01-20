@@ -4,10 +4,10 @@ const Keyframe = require('./Keyframe');
 // It's the box on the timeline that renders something and has
 // keyframes
 class Snippet {
-  constructor(snippetLine, pixiContainer, parentClass=null, start=0) {
+  constructor(snippetLine, parentClass=null, start=0) {
     // All units are in seconds.
     this.snippetLine = snippetLine;
-    this.pixiContainer = pixiContainer;
+    this.pixiContainer = snippetLine.pixiContainer;
     this.dom = null;
     this.parentClass = parentClass; // Do not use for now
     this.node = null;
@@ -237,6 +237,28 @@ class Snippet {
     if (this.node && this.node.pixi && this.node.pixi.parent) {
       this.node.pixi.parent.removeChild(this.node);
       this.node.pixi.destroy({children:true, texture:true, baseTexture:true});
+    }
+  }
+
+  exportObject() {
+    return {
+      start: this.start,
+      length: this.length,
+      initCode: this.initCode,
+      tickCode: this.tickCode,
+
+      keyframes: this.keyframes.map(k => k.exportObject())
+    };
+  }
+
+  importObject(obj) {
+    this.start = obj.start;
+    this.length = obj.length;
+    this.initCode = obj.initCode;
+    this.tickCode = obj.tickCode;
+    for (let k = 0; k < obj.keyframes.length; k++) {
+      this.keyframes[k] = new Keyframe(this);
+      this.keyframes[k].importObject(obj.keyframes[k]);
     }
   }
 }

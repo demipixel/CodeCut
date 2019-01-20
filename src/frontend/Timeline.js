@@ -83,13 +83,18 @@ class Timeline {
     }
   }
 
-  exportAsObject() {
-    return {};
+  exportObject() {
+    return {
+      snippetLines: this.snippetLines.map(s => s.exportObject())
+    };
   }
 
-  importAsObject(obj) {
-    // Do something
-    obj;
+  importObject(obj) {
+    for (let s = 0; s < obj.snippetLines.length; s++) {
+      this.snippetLines[s] = new SnippetLine(this);
+      this.snippetLines[s].importObject(obj.snippetLines[s])
+    }
+    this.TimelineVisuals.updateSnippetLines();
   }
 }
 

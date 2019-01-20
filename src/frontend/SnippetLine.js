@@ -25,7 +25,7 @@ class SnippetLine {
 
   // Returns false if inside another snippet and does nothing!
   newSnippet(start, parentClass) {
-    const snippet = new Snippet(this, this.pixiContainer, parentClass, start);
+    const snippet = new Snippet(this, parentClass, start);
     
     // Insert into snippets such that snippets remains sorted
     let indexOfSnippet = -1;
@@ -111,6 +111,19 @@ class SnippetLine {
     // Update our snippet!
     if (this.currentSnippet.timeInside(this.timeline.previewTime)) {
       return this.currentSnippet.update(this.timeline.previewTime - this.currentSnippet.start, hardSearch || handleKeyframes);
+    }
+  }
+
+  exportObject() {
+    return {
+      snippets: this.snippets.map(s => s.exportObject())
+    };
+  }
+
+  importObject(obj) {
+    for (let s = 0; s < obj.snippets.length; s++) {
+      this.snippets[s] = new Snippet(this);
+      this.snippets[s].importObject(obj.snippets[s]);
     }
   }
 }
