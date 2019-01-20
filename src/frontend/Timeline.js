@@ -13,18 +13,19 @@ class Timeline {
     this.previewSpeedScalar = 1.0;
 
     this.lastPreviewFrameTime = Date.now();
-
-    this.addLine();
     this.TimelineVisuals = TimelineVisuals;
   }
 
   addLine() {
     this.snippetLines.push(new SnippetLine(this));
+    console.log(this.TimelineVisuals);
+    this.TimelineVisuals.updateSnippetLines();
   }
 
   removeLine(index) {
+    this.snippetLines[index].dom.remove();
     this.snippetLines.splice(index, 1);
-    this.TimelineVisuals.removeSnippetLine(index);
+    // this.TimelineVisuals.updateSnippetLines();
   }
 
   // Play preview
@@ -82,13 +83,21 @@ class Timeline {
     }
   }
 
-  exportAsObject() {
-    return {};
+  exportObject() {
+    return {
+      snippetLines: this.snippetLines.map(s => s.exportObject())
+    };
   }
 
-  importAsObject(obj) {
-    // Do something
-    obj;
+  importObject(obj) {
+    for (let i = this.snippetLines.length - 1; i >= 0; i--) {
+      this.removeLine(i);
+    }
+    for (let s = 0; s < obj.snippetLines.length; s++) {
+      this.addLine();
+      this.snippetLines[s].importObject(obj.snippetLines[s])
+    }
+    this.scrub(0);
   }
 }
 

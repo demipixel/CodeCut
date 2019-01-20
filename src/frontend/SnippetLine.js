@@ -24,8 +24,8 @@ class SnippetLine {
   }
 
   // Returns false if inside another snippet and does nothing!
-  newSnippet(parentClass, start) {
-    const snippet = new Snippet(this, this.pixiContainer, parentClass, start);
+  newSnippet(start, parentClass) {
+    const snippet = new Snippet(this, parentClass, start);
     
     // Insert into snippets such that snippets remains sorted
     let indexOfSnippet = -1;
@@ -75,7 +75,7 @@ class SnippetLine {
   }
 
   // Update snippet that is active
-  update(hardSearch=false, handleWaypoints=false) {
+  update(hardSearch=false, handleKeyframes=false) {
     // If hardSearch is true, we just scrubbed somewhere
     // and need to search for the snippet to update/render
     if (hardSearch) {
@@ -86,6 +86,8 @@ class SnippetLine {
         this.currentSnippetIndex = i;
         if (this.snippets[i].timeInside(this.timeline.previewTime)) {
           this.currentSnippet = this.snippets[i];
+          break;
+        } else if (this.snippets[i].start > this.timeline.previewTime) {
           break;
         }
       }
@@ -110,7 +112,21 @@ class SnippetLine {
 
     // Update our snippet!
     if (this.currentSnippet.timeInside(this.timeline.previewTime)) {
-      this.currentSnippet.update(this.timeline.previewTime - this.currentSnippet.start, hardSearch || handleWaypoints);
+      return this.currentSnippet.update(this.timeline.previewTime - this.currentSnippet.start, hardSearch || handleKeyframes);
+    }
+  }
+
+  exportObject() {
+    return {
+      snippets: this.snippets.map(s => s.exportObject())
+    };
+  }
+
+  importObject(obj) {
+    this.snippets = [];
+    for (let s = 0; s < obj.snippets.length; s++) {
+      this.newSnippet(obj.snippets[s].start);
+      this.snippets[s].importObject(obj.snippets[s]);
     }
   }
 }

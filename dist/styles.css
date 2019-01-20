@@ -48,6 +48,10 @@ body, html {
   border: 2px solid gold;
 }
 
+.snippet.editing {
+  background: #666;
+}
+
 .snippet-edge-gripper  {
   width: 8px;
   position: absolute;
@@ -75,23 +79,57 @@ body, html {
 }
 
 .CodeMirror {
-  height: 150px;
+  position: relative;
+  /* height: 100%; */
   margin-bottom: 5px;
+  padding-top: 20px;
+}
+
+.CodeMirror .header {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  padding-left: 20px;
+}
+
+.CodeMirror.unsaved .header {
+  background: #b60;
+}
+
+.CodeMirror:not(.unsaved) .header {
+  background: #0a5;
+} */
+
+#main-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#top-half  {
+  flex: 0 1 auto;
+}
+
+#lower-half {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
 }
 
 #code-editor {
   width: 50%;
+  display: flex;
+  flex-direction: column;
 }
 
-.unsaved {
-  border-top: 3px solid #f60;
+#canvas-container {
+  width: 50%;
 }
 
-.CodeMirror:not(.unsaved) {
-  border-top: 3px solid #0d7;
-}
-
-.waypoint {
+.keyframe {
   height: 20px;
   width: 8px;
   background:  #c80;
@@ -105,11 +143,15 @@ body, html {
   -webkit-box-sizing: border-box;
 }
 
-.waypoint.selected {
+.keyframe.editing {
+  background: #fca;
+}
+
+.keyframe.selected {
   border: 1px solid white;
 }
 
-.snippet.selected .waypoint {
+.snippet.selected .keyframe {
   top: 1px;
   margin-left: -1px;
 }
