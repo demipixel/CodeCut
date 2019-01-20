@@ -15,6 +15,7 @@ function init() {
   mainTimeline.addLine();
   init.events = require('./events')(mainTimeline);
   Capture(60, mainTimeline);
+  
 }
 
 module.exports = init;

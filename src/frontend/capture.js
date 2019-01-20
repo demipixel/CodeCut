@@ -3,7 +3,7 @@
 // Spec is at http://dvcs.w3.org/hg/dap/raw-file/tip/media-stream-capture/RecordingProposal.html
 
 const Timeline = require('./Timeline')
-
+let recording = false
 
 
 let downloadLink = document.getElementById("downloadLink");
@@ -27,16 +27,37 @@ console.log(downloadLink)
 	const canvasRec = canvas.captureStream(0);
 	const mediaRec = new MediaRecorder(canvasRec);
 	let chunks = [];
+	let frames = [];
 	let count = 0;
 
 	mediaRec.ondataavailable = function(e) {
-		console.log(e);	
+		console.log('!!!!!!!' + e.data);	
 		chunks.push(e.data);
 	};
 
+// 	let renderFrame = (t) => {
+// 		if(recording){
+// 			time.scrub(count/60.0);
+// 			mediaRec.stream.getTracks()[0].requestFrame();
+
+// 		}
+
+// 		if(count/60 == 20){
+// 			mediaRec.stop();
+// 		}
+// 		console.log('requesting animation');
+//   requestAnimationFrame(renderFrame);
+
+// 	}
+ 
+	mediaRec.onstart = () =>{
+		recording = true;
+	}
+
 	mediaRec.onstop = function(){
+		recording = false
 		console.log('Stopped  & state = ' + mediaRec.state);
-					console.log(chunks);
+					console.log(chunks);	
 					var blob = new Blob(chunks, {type: "video/webm"});
 					chunks = [];
 	
@@ -60,12 +81,18 @@ console.log(downloadLink)
 	console.log(canvasRec);
 	console.log(canvas);
 	console.log(mediaRec);
-	mediaRec.start();	
+	console.log(canvasRec.getVideoTracks()[0])
+	console.log(mediaRec.stream);
+	console.log(mediaRec.stream.getTracks());
+
+	console.log('**')
+	mediaRec.start(10);	
 	for(startTime; startTime <= endTime; startTime += (1.0/FPS)){
 		time.scrub(startTime);
-		canvasRec.getVideoTracks()[0].requestFrame();
+		mediaRec.stream.getTracks()[0].requestFrame();
+		mediaRec.requestData();
 	}
-	mediaRec.stop();
+	 mediaRec.stop();
 }
 
 module.exports = exportVid;
