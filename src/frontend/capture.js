@@ -30,12 +30,13 @@ console.log(downloadLink)
 	let count = 0;
 
 	mediaRec.ondataavailable = function(e) {
+		console.log(e);	
 		chunks.push(e.data);
 	};
 
 	mediaRec.onstop = function(){
 		console.log('Stopped  & state = ' + mediaRec.state);
-	
+					console.log(chunks);
 					var blob = new Blob(chunks, {type: "video/webm"});
 					chunks = [];
 	
