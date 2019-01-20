@@ -90,11 +90,14 @@ class Timeline {
   }
 
   importObject(obj) {
+    for (let i = this.snippetLines.length - 1; i >= 0; i--) {
+      this.removeLine(i);
+    }
     for (let s = 0; s < obj.snippetLines.length; s++) {
-      this.snippetLines[s] = new SnippetLine(this);
+      this.addLine();
       this.snippetLines[s].importObject(obj.snippetLines[s])
     }
-    this.TimelineVisuals.updateSnippetLines();
+    this.scrub(0);
   }
 }
 

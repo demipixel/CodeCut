@@ -87,6 +87,8 @@ class SnippetLine {
         if (this.snippets[i].timeInside(this.timeline.previewTime)) {
           this.currentSnippet = this.snippets[i];
           break;
+        } else if (this.snippets[i].start > this.timeline.previewTime) {
+          break;
         }
       }
       if (oldSnippet && this.currentSnippet != oldSnippet) {
@@ -121,8 +123,9 @@ class SnippetLine {
   }
 
   importObject(obj) {
+    this.snippets = [];
     for (let s = 0; s < obj.snippets.length; s++) {
-      this.snippets[s] = new Snippet(this);
+      this.newSnippet(obj.snippets[s].start);
       this.snippets[s].importObject(obj.snippets[s]);
     }
   }

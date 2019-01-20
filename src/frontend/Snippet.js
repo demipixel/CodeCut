@@ -256,6 +256,7 @@ class Snippet {
     this.length = obj.length;
     this.initCode = obj.initCode;
     this.tickCode = obj.tickCode;
+    this.keyframes = [];
     for (let k = 0; k < obj.keyframes.length; k++) {
       this.keyframes[k] = new Keyframe(this);
       this.keyframes[k].importObject(obj.keyframes[k]);

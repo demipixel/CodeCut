@@ -15,6 +15,8 @@
         <h1>CodeCut</h1>
         <button id="toggle-play-pause" onClick="CodeCut.events.togglePlayPause()">Play</button>
         <button id="new-snippet-line" onClick="CodeCut.events.newSnippetLine()">New Snippet Line</button>
+        <input type="file" style="display:none;" id="inputfile" onChange="CodeCut.events.importFile(event)" />
+        <button id="import-file" onClick="document.getElementById('inputfile').click()">Import</button>
         <span id="preview-time">Preview Time: 0</span>
         <br><br>
         <div id="timeline">
