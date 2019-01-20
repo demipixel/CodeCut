@@ -75,7 +75,7 @@ class SnippetLine {
   }
 
   // Update snippet that is active
-  update(hardSearch=false, handleWaypoints=false) {
+  update(hardSearch=false, handleKeyframes=false) {
     // If hardSearch is true, we just scrubbed somewhere
     // and need to search for the snippet to update/render
     if (hardSearch) {
@@ -110,7 +110,7 @@ class SnippetLine {
 
     // Update our snippet!
     if (this.currentSnippet.timeInside(this.timeline.previewTime)) {
-      this.currentSnippet.update(this.timeline.previewTime - this.currentSnippet.start, hardSearch || handleWaypoints);
+      this.currentSnippet.update(this.timeline.previewTime - this.currentSnippet.start, hardSearch || handleKeyframes);
     }
   }
 }

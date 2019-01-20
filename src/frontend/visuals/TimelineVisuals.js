@@ -45,12 +45,12 @@ module.exports = function(TimeVisualizer, CodeEditor) {
 
         selected =  true;
         snippetDom.classList.add('selected');
-      } else { // Add waypoint when shift is held down
+      } else { // Add keyframe when shift is held down
         const canvas = document.getElementById('time-visualizer-canvas');
         const pixelsPerSecond = TimeVisualizer.getPixelsPerSecond();
         const timeStart = TimeVisualizer.getTimeStart();
         const time = (e.clientX - canvas.clientLeft) / pixelsPerSecond + timeStart;
-        snippet.addWaypoint(time - snippet.start);
+        snippet.addKeyframe(time - snippet.start);
       }
     }
     document.addEventListener('mousedown', function(e) {
@@ -158,65 +158,65 @@ module.exports = function(TimeVisualizer, CodeEditor) {
     }
   }
 
-  function updateWaypoints(snippet) {
-    for (let w = 0; w < snippet.waypoints.length; w++) {
-      if (snippet.waypoints[w].dom) continue;
+  function updateKeyframes(snippet) {
+    for (let w = 0; w < snippet.keyframes.length; w++) {
+      if (snippet.keyframes[w].dom) continue;
 
-      const waypointDom = document.createElement('div');
-      const waypoint = snippet.waypoints[w];
-      waypoint.dom = waypointDom;
-      waypointDom.classList.add('waypoint');
+      const keyframeDom = document.createElement('div');
+      const keyframe = snippet.keyframes[w];
+      keyframe.dom = keyframeDom;
+      keyframeDom.classList.add('keyframe');
 
       let selected = false;
       addEventListener('keydown', function(e) {
         if (e.key == 'Backspace') {
-          if (selected) waypoint.remove();
+          if (selected) keyframe.remove();
         }
       });
-      let waypointClicked = false;
+      let keyframeClicked = false;
       let startClick = { x: 0, y: 0 };
       let oldTime = 0;
       let lastValidMovedSeconds = 0;
-      waypointDom.onmousedown = function(e) {
-        if (e.path[0] != waypointDom) return;
+      keyframeDom.onmousedown = function(e) {
+        if (e.path[0] != keyframeDom) return;
         e.preventDefault();
-        waypointClicked = true;
+        keyframeClicked = true;
         startClick.x = e.clientX;
         startClick.y = e.clientY;
-        oldTime = waypoint.snippetTime;
+        oldTime = keyframe.snippetTime;
         document.body.style.cursor = 'move';
-        waypointDom.style.cursor = 'move';
+        keyframeDom.style.cursor = 'move';
 
         selected =  true;
-        waypointDom.classList.add('selected');
+        keyframeDom.classList.add('selected');
       }
       document.addEventListener('mousedown', function(e) {
-        if (e.path[0] == waypointDom) return;
+        if (e.path[0] == keyframeDom) return;
         selected = false;
-        waypointDom.classList.remove('selected');
+        keyframeDom.classList.remove('selected');
       });
       document.addEventListener('mouseup', function(e) {
-        waypointClicked = false;
+        keyframeClicked = false;
         document.body.style.cursor = '';
-        waypointDom.style.cursor = 'pointer';
+        keyframeDom.style.cursor = 'pointer';
       });
       document.addEventListener('mousemove', function(e) {
-        if (!waypointClicked) return;
+        if (!keyframeClicked) return;
         let movedSeconds = (e.clientX - startClick.x) / TimeVisualizer.getPixelsPerSecond();
-        // Don't move waypoint if we can't place it there.
-        if (snippet.waypointAtTime(oldTime + movedSeconds, waypoint)) {
+        // Don't move keyframe if we can't place it there.
+        if (snippet.keyframeAtTime(oldTime + movedSeconds, keyframe)) {
           movedSeconds = lastValidMovedSeconds;
         }
-        waypoint.move(Math.max(0, oldTime + movedSeconds));
+        keyframe.move(Math.max(0, oldTime + movedSeconds));
         lastValidMovedSeconds = movedSeconds;
         update();
         snippet.snippetLine.update(false, true);
       });
-      waypointDom.ondblclick = function(e) {
-        if (e.path[0] != waypointDom) return;
-        CodeEditor.editors[0].setValue(waypoint.hitCode);
-        CodeEditor.editors[1].setValue(waypoint.tickCode);
-        CodeEditor.editors[2].setValue(waypoint.endCode);
+      keyframeDom.ondblclick = function(e) {
+        if (e.path[0] != keyframeDom) return;
+        CodeEditor.editors[0].setValue(keyframe.hitCode);
+        CodeEditor.editors[1].setValue(keyframe.tickCode);
+        CodeEditor.editors[2].setValue(keyframe.endCode);
         CodeEditor.markSaved(0);
         CodeEditor.markSaved(1);
         CodeEditor.markSaved(2);
@@ -224,11 +224,11 @@ module.exports = function(TimeVisualizer, CodeEditor) {
           snippet.deactivate();
           snippet.snippetLine.update(false, true);
         }
-        CodeEditor.setSaveLocation(0, waypoint, 'hitCode', save);
-        CodeEditor.setSaveLocation(1, waypoint, 'tickCode', save);
-        CodeEditor.setSaveLocation(2, waypoint, 'endCode', save);
+        CodeEditor.setSaveLocation(0, keyframe, 'hitCode', save);
+        CodeEditor.setSaveLocation(1, keyframe, 'tickCode', save);
+        CodeEditor.setSaveLocation(2, keyframe, 'endCode', save);
       }
-      snippet.dom.appendChild(waypointDom);
+      snippet.dom.appendChild(keyframeDom);
     }
 
     update();
@@ -244,10 +244,10 @@ module.exports = function(TimeVisualizer, CodeEditor) {
         snippets[s].dom.style.left = (snippets[s].start - timeStart) * pixelsPerSecond
         snippets[s].dom.style.width = snippets[s].length * pixelsPerSecond;
 
-        const waypoints = snippets[s].waypoints;
-        for (let w = 0; w < waypoints.length; w++) {
-          // Waypoints are 8 wide so try to center them
-          waypoints[w].dom.style.left = waypoints[w].snippetTime * pixelsPerSecond - 5;
+        const keyframes = snippets[s].keyframes;
+        for (let w = 0; w < keyframes.length; w++) {
+          // Keyframes are 8 wide so try to center them
+          keyframes[w].dom.style.left = keyframes[w].snippetTime * pixelsPerSecond - 5;
         }
       }
     }
@@ -270,6 +270,6 @@ module.exports = function(TimeVisualizer, CodeEditor) {
     addSnippetLines,
     addSnippet,
     setPlayhead,
-    updateWaypoints
+    updateKeyframes
   }
 }

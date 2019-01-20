@@ -91,7 +91,7 @@ body, html {
   border-top: 3px solid #0d7;
 }
 
-.waypoint {
+.keyframe {
   height: 20px;
   width: 8px;
   background:  #c80;
@@ -105,11 +105,11 @@ body, html {
   -webkit-box-sizing: border-box;
 }
 
-.waypoint.selected {
+.keyframe.selected {
   border: 1px solid white;
 }
 
-.snippet.selected .waypoint {
+.snippet.selected .keyframe {
   top: 1px;
   margin-left: -1px;
 }

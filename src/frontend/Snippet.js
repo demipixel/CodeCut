@@ -1,8 +1,8 @@
-const Waypoint = require('./Waypoint');
+const Keyframe = require('./Keyframe');
 
 // This is basically a node on some snippet line with a length
 // It's the box on the timeline that renders something and has
-// waypoints
+// keyframes
 class Snippet {
   constructor(snippetLine, pixiContainer, parentClass=null, start=0) {
     // All units are in seconds.
@@ -19,43 +19,43 @@ class Snippet {
     this.initCode = '';
     this.tickCode = '';
 
-    // Should *always* be sorted in order of time that the waypoint occurs
-    // No two waypoints should be able to be at the same time
-    this.waypoints = [];
+    // Should *always* be sorted in order of time that the keyframe occurs
+    // No two keyframes should be able to be at the same time
+    this.keyframes = [];
     // Works just like currentSnippet (See NodeLine comments for details)
-    // Notice this CAN have a -1 index (before the first waypoint)
-    this.currentWaypoint = null;
-    this.currentWaypointIndex = -1;
+    // Notice this CAN have a -1 index (before the first keyframe)
+    this.currentKeyframe = null;
+    this.currentKeyframeIndex = -1;
   }
   
-  update(timeInSnippet, reparseWaypoints)  {
+  update(timeInSnippet, reparseKeyframes)  {
     if (!this.active) {
       this.updateNodeCode();
       this.active = true;
     }
 
     // Basically, this happens if we scrub.
-    if (reparseWaypoints) this.reparseWaypoints(timeInSnippet);
+    if (reparseKeyframes) this.reparseKeyframes(timeInSnippet);
 
-    // Have we hit the next waypoint? If so, that's our new waypoint.
-    if (this.nextWaypoint && this.nextWaypoint.beenHit(timeInSnippet)) {
-      if (this.currentWaypointIndex != -1) {
-        this.node['waypoint_'+this.currentWaypointIndex+'_end'](PIXI);
+    // Have we hit the next keyframe? If so, that's our new keyframe.
+    if (this.nextKeyframe && this.nextKeyframe.beenHit(timeInSnippet)) {
+      if (this.currentKeyframeIndex != -1) {
+        this.node['keyframe_'+this.currentKeyframeIndex+'_end'](PIXI);
       }
-      this.currentWaypoint = this.nextWaypoint;
-      this.currentWaypointIndex++;
-      console.log('Hit waypoint!');
-      console.log(this.currentWaypointIndex, this.node['waypoint_'+this.currentWaypointIndex+'_hit'].toString());
-      this.node['waypoint_'+this.currentWaypointIndex+'_hit'](PIXI);
+      this.currentKeyframe = this.nextKeyframe;
+      this.currentKeyframeIndex++;
+      console.log('Hit keyframe!');
+      console.log(this.currentKeyframeIndex, this.node['keyframe_'+this.currentKeyframeIndex+'_hit'].toString());
+      this.node['keyframe_'+this.currentKeyframeIndex+'_hit'](PIXI);
     }
 
-    // Handle waypoints
-    if (this.currentWaypoint) {
-      this.node['waypoint_'+this.currentWaypointIndex+'_tick'](
+    // Handle keyframes
+    if (this.currentKeyframe) {
+      this.node['keyframe_'+this.currentKeyframeIndex+'_tick'](
         PIXI,
-        timeInSnippet  - this.currentWaypoint.snippetTime,
+        timeInSnippet  - this.currentKeyframe.snippetTime,
         timeInSnippet,
-        (this.nextWaypoint ? this.nextWaypoint.snippetTime : this.length) - this.currentWaypoint.snippetTime
+        (this.nextKeyframe ? this.nextKeyframe.snippetTime : this.length) - this.currentKeyframe.snippetTime
       );
     }
 
@@ -63,53 +63,53 @@ class Snippet {
     this.node.tick(PIXI, timeInSnippet);
   }
 
-  addWaypoint(snippetTime=0) {
-    const waypoint = new Waypoint(this, snippetTime);
+  addKeyframe(snippetTime=0) {
+    const keyframe = new Keyframe(this, snippetTime);
 
-    // Insert into waypoints such that waypoints remains sorted
-    let indexOfWaypoint = -1;
-    for (let i = 0; i < this.waypoints.length; i++) {
-      if (this.waypoints[i].snippetTime < snippetTime) continue;
-      else if (this.waypoints[i].snippetTime == snippetTime) {
-        throw new Error('Two waypoints cannot occur at the same time!');
+    // Insert into keyframes such that keyframes remains sorted
+    let indexOfKeyframe = -1;
+    for (let i = 0; i < this.keyframes.length; i++) {
+      if (this.keyframes[i].snippetTime < snippetTime) continue;
+      else if (this.keyframes[i].snippetTime == snippetTime) {
+        throw new Error('Two keyframes cannot occur at the same time!');
       }
 
-      this.waypoints.splice(i, 0, waypoint);
-      indexOfWaypoint = i;
+      this.keyframes.splice(i, 0, keyframe);
+      indexOfKeyframe = i;
       break;
     }
 
-    if (indexOfWaypoint == -1) this.waypoints.push(waypoint);
+    if (indexOfKeyframe == -1) this.keyframes.push(keyframe);
 
     this.deactivate();
     this.snippetLine.update(false, true);
 
-    this.snippetLine.timeline.TimelineVisuals.updateWaypoints(this);
+    this.snippetLine.timeline.TimelineVisuals.updateKeyframes(this);
 
-    return waypoint;
+    return keyframe;
   }
 
-  removeWaypoint(waypoint) {
-    const index = this.waypoints.indexOf(waypoint);
+  removeKeyframe(keyframe) {
+    const index = this.keyframes.indexOf(keyframe);
     if (index == -1) return false;
 
-    this.waypoints.splice(index, 1);
+    this.keyframes.splice(index, 1);
     this.deactivate();
     this.snippetLine.update(false, true);
     return true;
   }
 
-  fixWaypointOrder(waypoint) {
-    let index = this.waypoints.indexOf(waypoint);
+  fixKeyframeOrder(keyframe) {
+    let index = this.keyframes.indexOf(keyframe);
     if (index == -1) return false;
 
     let changed = false;
-    while (index != this.waypoints.length - 1 &&
-            this.waypoints[index+1].snippetTime < this.waypoints[index].snippetTime) {
-      console.log(this.waypoints[index+1].snippetTime, this.waypoints[index].snippetTime);
-      const tmp = this.waypoints[index+1];
-      this.waypoints[index+1] = this.waypoints[index];
-      this.waypoints[index] = tmp;
+    while (index != this.keyframes.length - 1 &&
+            this.keyframes[index+1].snippetTime < this.keyframes[index].snippetTime) {
+      console.log(this.keyframes[index+1].snippetTime, this.keyframes[index].snippetTime);
+      const tmp = this.keyframes[index+1];
+      this.keyframes[index+1] = this.keyframes[index];
+      this.keyframes[index] = tmp;
       index++;
       changed = true;
     }
@@ -120,51 +120,51 @@ class Snippet {
     }
   }
 
-  get nextWaypoint() {
-    return this.waypoints[this.currentWaypointIndex+1];
+  get nextKeyframe() {
+    return this.keyframes[this.currentKeyframeIndex+1];
   }
 
-  waypointAtTime(snippetTime, ignoreWaypoint) {
-    for (let w = 0; w < this.waypoints.length; w++) {
-      if (this.waypoints[w] == ignoreWaypoint) continue;
-      if (this.waypoints[w].snippetTime < snippetTime) continue;
-      else if (this.waypoints[w].snippetTime == snippetTime) return true;
+  keyframeAtTime(snippetTime, ignoreKeyframe) {
+    for (let w = 0; w < this.keyframes.length; w++) {
+      if (this.keyframes[w] == ignoreKeyframe) continue;
+      if (this.keyframes[w].snippetTime < snippetTime) continue;
+      else if (this.keyframes[w].snippetTime == snippetTime) return true;
       else return false;
     }
     return false;
   }
 
-  reparseWaypoints(timeInSnippet) {
-    const oldWaypointIndex = this.currentWaypointIndex;
-    this.currentWaypointIndex = -1;
-    this.currentWaypoint = null;
-    for (let i = 0; i < this.waypoints.length; i++) {
-      if (this.waypoints[i].beenHit(timeInSnippet)) {
-        this.currentWaypoint = this.waypoints[i];
-        this.currentWaypointIndex = i;
+  reparseKeyframes(timeInSnippet) {
+    const oldKeyframeIndex = this.currentKeyframeIndex;
+    this.currentKeyframeIndex = -1;
+    this.currentKeyframe = null;
+    for (let i = 0; i < this.keyframes.length; i++) {
+      if (this.keyframes[i].beenHit(timeInSnippet)) {
+        this.currentKeyframe = this.keyframes[i];
+        this.currentKeyframeIndex = i;
       } else {
         break;
       }
     }
 
-    // Don't need to reparse jack shit, we're on the same waypoint dumbass
-    if (oldWaypointIndex == this.currentWaypointIndex) return;
+    // Don't need to reparse jack shit, we're on the same keyframe dumbass
+    if (oldKeyframeIndex == this.currentKeyframeIndex) return;
     
-    // If the new current waypoint is AHEAD of the old one,
-    // we only parse the new waypoints 'til then.
-    // Otherwise, we parse from the start to new current waypoint.
-    const skippedAhead = this.currentWaypointIndex > oldWaypointIndex;
-    const startIndex = skippedAhead ? oldWaypointIndex + 1 : 0;
-    const endIndex = this.currentWaypointIndex;
+    // If the new current keyframe is AHEAD of the old one,
+    // we only parse the new keyframes 'til then.
+    // Otherwise, we parse from the start to new current keyframe.
+    const skippedAhead = this.currentKeyframeIndex > oldKeyframeIndex;
+    const startIndex = skippedAhead ? oldKeyframeIndex + 1 : 0;
+    const endIndex = this.currentKeyframeIndex;
 
     // Respawning the node every time may be INCREDIBLY inefficient
     // Better ways to do it? Problem with just calling init is that it
     // doesn't clearly any data that may have been saved in the object
-    // by other waypoints or tick()
+    // by other keyframes or tick()
     if (!skippedAhead) this.respawnNodeInstance();
     for (let i = startIndex; i <= endIndex; i++) {
-      if (i != 0) this.node['waypoint_'+(i-1)+'_end'](PIXI);
-      this.node['waypoint_'+i+'_hit'](PIXI);
+      if (i != 0) this.node['keyframe_'+(i-1)+'_end'](PIXI);
+      this.node['keyframe_'+i+'_hit'](PIXI);
     }
   }
 
@@ -194,11 +194,11 @@ class Snippet {
     this.generatedClass.prototype.init = eval('(function(PIXI){'+this.initCode+'})');
     this.generatedClass.prototype.tick = eval('(function(PIXI, time){'+this.tickCode+'})');
 
-    for (let w = 0; w < this.waypoints.length; w++) {
-      const waypoint = this.waypoints[w];
-      this.generatedClass.prototype['waypoint_'+w+'_hit'] = eval('(function(PIXI){'+waypoint.hitCode+'})');
-      this.generatedClass.prototype['waypoint_'+w+'_tick'] = eval('(function(PIXI, time, nodeTime, length){'+waypoint.tickCode+'})');
-      this.generatedClass.prototype['waypoint_'+w+'_end'] = eval('(function(PIXI){'+waypoint.endCode+'})');
+    for (let w = 0; w < this.keyframes.length; w++) {
+      const keyframe = this.keyframes[w];
+      this.generatedClass.prototype['keyframe_'+w+'_hit'] = eval('(function(PIXI){'+keyframe.hitCode+'})');
+      this.generatedClass.prototype['keyframe_'+w+'_tick'] = eval('(function(PIXI, time, nodeTime, length){'+keyframe.tickCode+'})');
+      this.generatedClass.prototype['keyframe_'+w+'_end'] = eval('(function(PIXI){'+keyframe.endCode+'})');
     }
 
     this.respawnNodeInstance();
@@ -220,8 +220,8 @@ class Snippet {
     this.active = false;
     this.destroyNodePixi();
     this.node = null;
-    this.currentWaypointIndex = -1;
-    this.currentWaypoint = null;
+    this.currentKeyframeIndex = -1;
+    this.currentKeyframe = null;
   }
 
   remove() {

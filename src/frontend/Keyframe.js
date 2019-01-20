@@ -1,13 +1,13 @@
 
-class Waypoint {
+class Keyframe {
   constructor(snippet, snippetTime=0) {
-    this.snippet = snippet; // Snippet that this waypoint belongs to
-    this.snippetTime = snippetTime; // Time of the waypoints relative to the snippet
+    this.snippet = snippet; // Snippet that this keyframe belongs to
+    this.snippetTime = snippetTime; // Time of the keyframes relative to the snippet
     this.dom = null;
 
-    this.hitCode = '';  // Code called when the waypoint is hit (only once)
-    this.tickCode = ''; // Code called every frame after this waypoint but before the next one
-    this.endCode = ''; //  Code called right before the next waypoint is hit
+    this.hitCode = '';  // Code called when the keyframe is hit (only once)
+    this.tickCode = ''; // Code called every frame after this keyframe but before the next one
+    this.endCode = ''; //  Code called right before the next keyframe is hit
   }
 
   beenHit(time)  {
@@ -16,12 +16,12 @@ class Waypoint {
 
   remove() {
     this.dom.remove();
-    this.snippet.removeWaypoint(this);
+    this.snippet.removeKeyframe(this);
   }
 
   move(time) {
     this.snippetTime = time;
-    this.snippet.fixWaypointOrder(this);
+    this.snippet.fixKeyframeOrder(this);
   }
 
   exportObject() {
@@ -41,4 +41,4 @@ class Waypoint {
   }
 }
 
-module.exports = Waypoint;
+module.exports = Keyframe;
