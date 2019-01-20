@@ -21,6 +21,8 @@
   "dependencies": {
     "browserify": "^16.2.3",
     "codemirror": "^5.42.2",
+    "express": "^4.16.4",
+    "express-fileupload": "^1.1.1-alpha.1",
     "pixi.js": "^4.8.5"
   },
   "devDependencies": {
