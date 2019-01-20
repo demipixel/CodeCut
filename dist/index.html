@@ -19,9 +19,9 @@
         <span class="top-button" id="new-snippet" onClick="alert('Adding new snippet')"><img src="/img/256-Snippet-01.png" alt="New Snippet" height="30"></span>
         <span class="top-button" id="new-snippet-line" onClick="CodeCut.events.newSnippetLine()"><img src="/img/256-Lines-01.png" alt="New Snippet Line" height="30"></span>
         <span class ="button-divider"></span>
-        <span class="top-button" id="play-from-start" onClick="alert('Playing from start')"><img src="/img/256-Go_to_Start-01.png" alt="Play from Start" height="30"></span>
+        <span class="top-button" id="play-from-start" onClick="timeline.scrub(0);timeline.play();"><img src="/img/256-Go_to_Start-01.png" alt="Play from Start" height="30"></span>
         <span class="top-button" onClick="CodeCut.events.togglePlayPause()"><img src="/img/256-Play-01.png" id="toggle-play-pause" alt="Play" height="30"></span>
-        <span class="top-button" id="stop" onClick="alert('Stopping video')"><img src="/img/256-Stop-01.png" alt="Stop" height="30"></span>
+        <span class="top-button" id="stop" onClick="timeline.scrub(0)"><img src="/img/256-Stop-01.png" alt="Stop" height="30"></span>
         <span class ="button-divider"></span>
         <span id="preview-time" style="padding-left:8px;padding-right:8p;font-size:30px;">00:00:00</span>
         <span class ="button-divider"></span>

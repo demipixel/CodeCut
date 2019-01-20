@@ -68,12 +68,6 @@ app.use('/', express.static(path.resolve(__dirname + '../../../dist/')));
 
 //app.post('/vid')
 
-function start(){
-    app.listen(PORT, function() {
-        console.log('Express server listening on port ', PORT); // eslint-disable-line
-      }); 
-}
 app.listen(PORT, function() {
-    console.log('Express server listening on port ', PORT); // eslint-disable-line
-  });
-start();
+  console.log('Express server listening on port ', PORT); // eslint-disable-line
+});

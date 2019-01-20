@@ -25,6 +25,7 @@ class Timeline {
     const index = this.snippetLines.indexOf(line);
     if (index == -1) return false;
     this.snippetLines[index].dom.remove();
+    this.snippetLines[index].pixiContainer.destroy();
     this.snippetLines.splice(index, 1);
     return true;
   }

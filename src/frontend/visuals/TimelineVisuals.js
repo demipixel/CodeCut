@@ -315,6 +315,7 @@ module.exports = function(TimeVisualizer, CodeEditor) {
     updateSnippetLines,
     addSnippet,
     setPlayhead,
-    updateKeyframes
-  }
+    updateKeyframes,
+    update
+  };
 }
