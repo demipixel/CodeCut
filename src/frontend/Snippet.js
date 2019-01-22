@@ -194,7 +194,7 @@ class Snippet {
     // const superClass = PIXI[this.parentClass];
     // const generatedClass = class GeneratedClass extends superClass {}
 
-    this.generatedClass = function() { this.pixi = null; };
+    this.generatedClass = function() { this.pixi = null; this.pixiApp = null; };
     const errors = [];
     
 
@@ -245,6 +245,7 @@ class Snippet {
     this.destroyNodePixi();
     this.node = new this.generatedClass();
     this.node.pixi = new PIXI.Graphics();
+    this.node.pixiApp = this.snippetLine.timeline.pixiApp;
     try {
       this.node.init(PIXI, EasingFunctions);
     } catch (e) {
@@ -300,6 +301,7 @@ class Snippet {
       this.keyframes[k] = new Keyframe(this);
       this.keyframes[k].importObject(obj.keyframes[k]);
     }
+    this.snippetLine.timeline.TimelineVisuals.updateKeyframes(this);
   }
 }
 
